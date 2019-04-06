@@ -6,6 +6,7 @@ public class Trail : MonoBehaviour {
 	public Movable mMovable;
 	public LineRenderer mTrail;
 	// Use this for initialization
+    //TODO:Update trail
 	void Start () {
 		mTrail=GetComponent<LineRenderer>();
 	}
@@ -19,7 +20,7 @@ public class Trail : MonoBehaviour {
 	}
 	void UpdateTrail()
 	{
-		Vector3[] tmp=mMovable.getTargets().ToArray();
+        Vector3[] tmp = new Vector3[2];
 		mTrail.positionCount=tmp.Length;
 		mTrail.SetPositions(tmp);
 	}

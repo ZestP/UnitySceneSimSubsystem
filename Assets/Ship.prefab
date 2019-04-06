@@ -321,6 +321,7 @@ GameObject:
   - component: {fileID: 114202800784457638}
   - component: {fileID: 114235744451357598}
   - component: {fileID: 7240985356477090148}
+  - component: {fileID: 4836372419539816686}
   m_Layer: 0
   m_Name: Ship
   m_TagString: selectable
@@ -362,6 +363,8 @@ MonoBehaviour:
   - {fileID: 1338422705740960}
   isSelected: 0
   mMovable: {fileID: 0}
+  mCS: {fileID: 0}
+  selectID: -1
 --- !u!114 &114235744451357598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -374,6 +377,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db71c8ab6c745f54a980de6e96e34045, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mClock: {fileID: 0}
   epsilon: 1
   speed: 20
 --- !u!114 &7240985356477090148
@@ -388,3 +392,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f69d410cb50046745af7b48558362591, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4836372419539816686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1965617751239080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2eb9f73c0f9c07b4384ad2f89a43c733, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mSelectable: {fileID: 114202800784457638}
+  mMovable: {fileID: 114235744451357598}
+  mSpawnable: {fileID: 7240985356477090148}

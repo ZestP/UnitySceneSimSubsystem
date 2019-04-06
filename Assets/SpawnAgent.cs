@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SpawnAgent : MonoBehaviour
 {
-    bool spawning = false;
+    public bool spawning = false;
     public AsynchronousClient netAgent;
     public CameraSelect mCS;
     public GameObject[] agentObjs;
@@ -17,8 +17,16 @@ public class SpawnAgent : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        units = new List<UnitProfile>();
+        unitAvability = new List<bool>();
         dest = new Vector3(0, 0, 0);
+
+
+
         mCS = GameObject.Find("BackgroundCamera").GetComponent<CameraSelect>();
+
+
     }
 
     // Update is called once per frame
@@ -28,6 +36,8 @@ public class SpawnAgent : MonoBehaviour
         {
             netAgent.GetMsg("Cancel");
             List<string> msg=netAgent.GetMsg("Spawn");
+            ParseMsg(msg);
+            msg = netAgent.GetMsg("Select");
             ParseMsg(msg);
         }
         else
@@ -42,11 +52,18 @@ public class SpawnAgent : MonoBehaviour
                 spawning = false;
                 Destroy(agentObj);
             }
+
             agentObj.transform.position = dest;
             if(Input.GetMouseButtonDown(0))
             {
-                if (objID >= 0) { GameObject tg=Instantiate(spawnableObjs[objID]).gameObject;tg.transform.position = dest; }
+                //Debug.Log("Left click in Spawn mode");
+                if (objID >= 0) {
+                    //Spawn obj
+                    int uid = AddUnit(dest);
+                    netAgent.SendMessage($"Spawn DD {uid} {dest.x} {dest.y} {dest.z}");
+                }
             }
+            
         }
     }
     public void ToggleSpawningState(bool to)
@@ -57,19 +74,79 @@ public class SpawnAgent : MonoBehaviour
     {
         if(msg!=null)
         {
-            switch(msg[1])
+            switch(msg[0])
             {
-                case "DD":
-                    objID = 0;
+                case "Spawn":
+                    switch (msg[1])
+                    {
+                        case "DD":
+                            objID = 0;
+                            break;
+                        default:
+                            break;
+                    }
+                    agentObj = Instantiate(agentObjs[objID]).gameObject;
+                    spawning = true;
+                    mCS.ClearSelection();
+                    mCS.enabled = false;
                     break;
-                default:
+                case "Select":
+                    int selID = int.Parse(msg[1]);
+                    mCS.ClearSelection();
+                    units[selID].mSelectable.Select();
                     break;
+                
             }
-            agentObj = Instantiate(agentObjs[objID]).gameObject;
-            spawning = true;
-            mCS.ClearSelection();
-            mCS.enabled = false;
             
+            
+        }
+    }
+
+    
+    private List<UnitProfile> units;
+    private List<bool> unitAvability;
+    
+    public int AddUnit(Vector3 initPos)
+    {
+        UnitProfile tup=SpawnUnit();
+        for (int i = 0; i < unitAvability.Count; i++)
+        {
+            if (!unitAvability[i])
+            {
+                units[i] = tup;
+                unitAvability[i] = true;
+                tup.AddTarget(new Position(initPos, 0));
+                return i;
+            }
+        }
+        Debug.Log($"Add unit at{initPos}");
+        tup.AddTarget(new Position(initPos, 0));
+        units.Add(tup);
+        unitAvability.Add(true);
+        return units.Count - 1;
+    }
+    private UnitProfile SpawnUnit()
+    {
+        GameObject tg = Instantiate(spawnableObjs[objID]).gameObject;
+        UnitProfile tup=tg.GetComponent<UnitProfile>();
+
+        return tup;
+    }
+
+    public UnitProfile GetUnit(int uid)
+    {
+        if(unitAvability[uid])
+        {
+            return units[uid];
+        }
+        return null;
+    }
+    public void RemoveUnit(int uid)
+    {
+        if(unitAvability[uid])
+        {
+            Destroy(units[uid].gameObject);
+            unitAvability[uid] = false;
         }
     }
 }

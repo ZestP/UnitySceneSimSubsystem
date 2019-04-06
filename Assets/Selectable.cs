@@ -7,6 +7,7 @@ public class Selectable : MonoBehaviour {
 	public bool isSelected;
 	public Movable mMovable;
     public CameraSelect mCS;
+    public int selectID=-1;
 	void Start()
 	{
 		ToggleState(false);

@@ -13,7 +13,8 @@ public class CameraSelect : MonoBehaviour
     private bool drawRectangle = false;//是否开始画线标志
     //public UnitManager mUnitMan;
     private List<GameObject> characters = new List<GameObject>();
-
+    public AsynchronousClient netAgent;
+    public SpawnAgent spawnAgent;
     // Use this for initialization
     void Start()
     {
@@ -42,31 +43,43 @@ public class CameraSelect : MonoBehaviour
         }else if(Input.GetMouseButtonUp(0))
         {
             drawRectangle = false;//如果鼠标左键放开 结束画线
+            if(!spawnAgent.spawning)
+            {
+                foreach (GameObject obj in characters)
+                {
+                    if(obj.GetComponent<Selectable>().isSelected)
+                    {
+                        //netAgent.SendMessage($"Select {}");
+                        break;
+                    }
+                }
+            }
         }else if (Input.GetMouseButtonDown(1))
         {
-            RaycastHit hit;
+            //TODO:Implement if needed
+            //RaycastHit hit;
 
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1000))
-            {
-                    Vector3 dest=new Vector3(hit.point.x,0,hit.point.z);
-                    GameObject.Instantiate(mDestIcon,dest,Quaternion.identity);
-                    foreach (GameObject go in characters)
-                    {
-                        Selectable tmp=go.GetComponent<Selectable>();
-                        if (tmp.isSelected)
-                        {
-                            if(Input.GetKey(KeyCode.LeftShift)||Input.GetKey(KeyCode.RightShift))
-                            {
-                                tmp.GetMovable().AddTarget(dest);
-                            }else{
+            //if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1000))
+            //{
+            //        Vector3 dest=new Vector3(hit.point.x,0,hit.point.z);
+            //        GameObject.Instantiate(mDestIcon,dest,Quaternion.identity);
+            //        foreach (GameObject go in characters)
+            //        {
+            //            Selectable tmp=go.GetComponent<Selectable>();
+            //            if (tmp.isSelected)
+            //            {
+            //                if(Input.GetKey(KeyCode.LeftShift)||Input.GetKey(KeyCode.RightShift))
+            //                {
+            //                    tmp.GetMovable().AddTarget(dest);
+            //                }else{
                                 
-                                tmp.GetMovable().SetTarget(dest);
-                                //tmp.DisSelect();
-                            }
-                        }
-                    }
+            //                    tmp.GetMovable().SetTarget(dest);
+            //                    //tmp.DisSelect();
+            //                }
+            //            }
+            //        }
                 
-            }
+            //}
         }
     }
 
